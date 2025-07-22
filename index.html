@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Help Bhuban Reach His Malai Kulfi</title>
+  <style>
+    body {
+      margin: 0;
+      background: #fff0f6;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      color: #d6336c;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #maze {
+      display: grid;
+      grid-template-columns: repeat(21, 20px);
+      grid-template-rows: repeat(21, 20px);
+      gap: 1px;
+      background: #fff;
+      padding: 10px;
+      border: 4px solid #f783ac;
+      box-shadow: 0 0 12px rgba(214, 51, 108, 0.4);
+    }
+
+    .cell {
+      width: 20px;
+      height: 20px;
+      box-sizing: border-box;
+    }
+
+    .wall {
+      background-color: #f03e3e;
+    }
+
+    .path {
+      background-color: #fff;
+    }
+
+    .player {
+      background-color: #ff6b81;
+      border: 2px solid #fae0e4;
+    }
+
+    .start img, .end img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    #info {
+      margin: 10px;
+      color: #e64980;
+    }
+
+    button {
+      padding: 8px 16px;
+      margin-bottom: 20px;
+      background-color: #f06595;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #d6336c;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🍦 Help Bhuban Reach His Malai Kulfi 🍦</h1>
+  <div id="maze"></div>
+  <div id="info">Use arrow keys to move Bhuban 🧭</div>
+  <button onclick="generateMaze()">Generate New Maze</button>
+
+  <script>
+    const rows = 21, cols = 21; // Odd numbers for maze carving
+    let maze = [];
+    let playerPos = { x: 1, y: 1 };
+    const startImg = "https://img.icons8.com/?size=100&id=A63A3cx8w9ba&format=png";
+    const endImg = "./kulfi.png";
+
+    function createMazeArray() {
+      maze = Array.from({ length: rows }, () => Array(cols).fill(1));
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function carveMaze(x, y) {
+      maze[y][x] = 0;
+      const dirs = [
+        [0, -2],
+        [2, 0],
+        [0, 2],
+        [-2, 0]
+      ];
+      shuffle(dirs);
+
+      for (const [dx, dy] of dirs) {
+        const nx = x + dx;
+        const ny = y + dy;
+
+        if (nx > 0 && ny > 0 && nx < cols - 1 && ny < rows - 1 && maze[ny][nx] === 1) {
+          maze[ny - dy / 2][nx - dx / 2] = 0;
+          carveMaze(nx, ny);
+        }
+      }
+    }
+
+    function renderMaze() {
+      const mazeContainer = document.getElementById("maze");
+      mazeContainer.innerHTML = "";
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+
+          if (r === 1 && c === 1) {
+            cell.classList.add("start");
+            const img = document.createElement("img");
+            img.src = startImg;
+            cell.appendChild(img);
+          } else if (r === rows - 2 && c === cols - 2) {
+            cell.classList.add("end");
+            const img = document.createElement("img");
+            img.src = endImg;
+            cell.appendChild(img);
+          } else if (r === playerPos.y && c === playerPos.x) {
+            cell.classList.add("player");
+          } else if (maze[r][c] === 1) {
+            cell.classList.add("wall");
+          } else {
+            cell.classList.add("path");
+          }
+
+          mazeContainer.appendChild(cell);
+        }
+      }
+    }
+
+    function generateMaze() {
+      createMazeArray();
+      carveMaze(1, 1);
+      playerPos = { x: 1, y: 1 };
+      renderMaze();
+      document.getElementById("info").textContent = "Use arrow keys to move Bhuban 🧭";
+    }
+
+    document.addEventListener("keydown", (e) => {
+      let { x, y } = playerPos;
+      if (e.key === "ArrowUp") y--;
+      else if (e.key === "ArrowDown") y++;
+      else if (e.key === "ArrowLeft") x--;
+      else if (e.key === "ArrowRight") x++;
+      else return;
+
+      if (x >= 0 && y >= 0 && x < cols && y < rows && maze[y][x] === 0) {
+        playerPos = { x, y };
+        renderMaze();
+        if (x === cols - 2 && y === rows - 2) {
+          document.getElementById("info").textContent = "🎉 Bhuban got his Malai Kulfi! 🥳";
+        }
+      }
+    });
+
+    generateMaze();
+  </script>
+
+</body>
+</html>
