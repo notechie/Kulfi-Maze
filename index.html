@@ -63,7 +63,7 @@
 
     button {
       padding: 8px 16px;
-      margin-bottom: 20px;
+      margin: 5px;
       background-color: #f06595;
       color: white;
       border: none;
@@ -75,17 +75,61 @@
     button:hover {
       background-color: #d6336c;
     }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .direction-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .direction-button {
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+      background-color: #ff99ac;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .direction-button:active {
+      background-color: #ff5c8a;
+    }
+
+    @media (max-width: 600px) {
+      #maze {
+        transform: scale(0.8);
+      }
+    }
   </style>
 </head>
 <body>
 
   <h1>🍦 Help Bhuban Reach His Malai Kulfi 🍦</h1>
   <div id="maze"></div>
-  <div id="info">Use arrow keys to move Bhuban 🧭</div>
+  <div id="info">Use arrows or tap buttons below to move Bhuban 🧭</div>
   <button onclick="generateMaze()">Generate New Maze</button>
 
+  <div class="controls">
+    <div class="direction-row">
+      <button class="direction-button" onclick="move('ArrowUp')">↑</button>
+    </div>
+    <div class="direction-row">
+      <button class="direction-button" onclick="move('ArrowLeft')">←</button>
+      <button class="direction-button" onclick="move('ArrowDown')">↓</button>
+      <button class="direction-button" onclick="move('ArrowRight')">→</button>
+    </div>
+  </div>
+
   <script>
-    const rows = 21, cols = 21; // Odd numbers for maze carving
+    const rows = 21, cols = 21;
     let maze = [];
     let playerPos = { x: 1, y: 1 };
     const startImg = "https://img.icons8.com/?size=100&id=A63A3cx8w9ba&format=png";
@@ -105,17 +149,12 @@
     function carveMaze(x, y) {
       maze[y][x] = 0;
       const dirs = [
-        [0, -2],
-        [2, 0],
-        [0, 2],
-        [-2, 0]
+        [0, -2], [2, 0], [0, 2], [-2, 0]
       ];
       shuffle(dirs);
 
       for (const [dx, dy] of dirs) {
-        const nx = x + dx;
-        const ny = y + dy;
-
+        const nx = x + dx, ny = y + dy;
         if (nx > 0 && ny > 0 && nx < cols - 1 && ny < rows - 1 && maze[ny][nx] === 1) {
           maze[ny - dy / 2][nx - dx / 2] = 0;
           carveMaze(nx, ny);
@@ -160,16 +199,15 @@
       carveMaze(1, 1);
       playerPos = { x: 1, y: 1 };
       renderMaze();
-      document.getElementById("info").textContent = "Use arrow keys to move Bhuban 🧭";
+      document.getElementById("info").textContent = "Use arrows or tap buttons below to move Bhuban 🧭";
     }
 
-    document.addEventListener("keydown", (e) => {
+    function move(direction) {
       let { x, y } = playerPos;
-      if (e.key === "ArrowUp") y--;
-      else if (e.key === "ArrowDown") y++;
-      else if (e.key === "ArrowLeft") x--;
-      else if (e.key === "ArrowRight") x++;
-      else return;
+      if (direction === "ArrowUp") y--;
+      else if (direction === "ArrowDown") y++;
+      else if (direction === "ArrowLeft") x--;
+      else if (direction === "ArrowRight") x++;
 
       if (x >= 0 && y >= 0 && x < cols && y < rows && maze[y][x] === 0) {
         playerPos = { x, y };
@@ -177,6 +215,12 @@
         if (x === cols - 2 && y === rows - 2) {
           document.getElementById("info").textContent = "🎉 Bhuban got his Malai Kulfi! 🥳";
         }
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        move(e.key);
       }
     });
 
