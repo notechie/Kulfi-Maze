@@ -95,16 +95,16 @@
     }
 
     .direction-button {
-        width: 100px;
-        height: 100px;
-        font-size: 26px;
-        background-color: #ff99ac;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-        margin: 6px;
-      }
+      width: 100px;
+      height: 100px;
+      font-size: 26px;
+      background-color: #ff99ac;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      margin: 6px;
+    }
 
     .direction-button:active {
       background-color: #ff5c8a;
@@ -114,6 +114,32 @@
       #maze {
         transform: scale(0.8);
       }
+    }
+
+    /* Popup styles */
+    #winPopup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 240, 246, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      color: #d6336c;
+      font-weight: bold;
+      z-index: 999;
+      text-align: center;
+      display: none;
+      flex-direction: column;
+    }
+
+    #winPopup button {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      padding: 10px 20px;
     }
   </style>
 </head>
@@ -133,6 +159,11 @@
       <button class="direction-button" onclick="move('ArrowDown')">↓</button>
       <button class="direction-button" onclick="move('ArrowRight')">→</button>
     </div>
+  </div>
+
+  <div id="winPopup">
+    🎉 Bhuban got his Malai Kulfi! 🥳
+    <button onclick="closePopup()">Play Again</button>
   </div>
 
   <script>
@@ -207,6 +238,7 @@
       playerPos = { x: 1, y: 1 };
       renderMaze();
       document.getElementById("info").textContent = "Use arrows or tap buttons below to move Bhuban 🧭";
+      document.getElementById("winPopup").style.display = "none";
     }
 
     function move(direction) {
@@ -221,8 +253,14 @@
         renderMaze();
         if (x === cols - 2 && y === rows - 2) {
           document.getElementById("info").textContent = "🎉 Bhuban got his Malai Kulfi! 🥳";
+          document.getElementById("winPopup").style.display = "flex";
         }
       }
+    }
+
+    function closePopup() {
+      document.getElementById("winPopup").style.display = "none";
+      generateMaze();
     }
 
     document.addEventListener("keydown", (e) => {
