@@ -77,10 +77,16 @@
     }
 
     .controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 10px;
+      display: none;
+    }
+
+    @media (max-width: 1024px) {
+      .controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+      }
     }
 
     .direction-row {
